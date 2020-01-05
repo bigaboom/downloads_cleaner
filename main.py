@@ -4,13 +4,13 @@ import os
 class Cleaner:
     def __init__(self):
         self.home = os.getenv('HOME')
-        self.from_directory = f'{self.home}/Downloads'
+        self.from_directory = os.path.join(self.home, 'Downloads')
         self.book_list = ['.pdf', '.fb2', '.txt']
         self.torrent_list = ['.torrent']
         self.movie_list = ['.mkv', '.m4v', '.avi']
-        self.book_dir = f'{self.home}/books'
-        self.torrent_dir = f'{self.home}/torrents'
-        self.movie_dir = f'{self.home}/Movies'
+        self.book_dir = os.path.join(self.home, 'books')
+        self.torrent_dir = os.path.join(self.home, 'torrents')
+        self.movie_dir = os.path.join(self.home, 'Movies')
 
     def get_list(self, attr=None):
         if attr:
@@ -22,37 +22,19 @@ class Cleaner:
                         result.append(file)
                         break
             return result
-        print('Не указан тип возвразаемых файлов')
+        print('Type of returned files is not specified')
 
-    def move_books(self):
-        for file in self.get_list('book'):
+    def move_files(self, attr=None):
+        for file in self.get_list(attr):
             try:
-                print(f'Trying to move file {file} to {self.book_dir}/', end='...')
-                os.renames(f'{self.from_directory}/{file}', f'{self.book_dir}/{file}')
-                print(' Done')
-            except:
-                print('Error')
-
-    def move_movies(self):
-        for file in self.get_list('movie'):
-            try:
-                print(f'Trying to move file {file} to {self.movie_dir}/', end='...')
-                os.renames(f'{self.from_directory}/{file}', f'{self.movie_dir}/{file}')
-                print(' Done')
-            except:
-                print('Error')
-
-    def move_torrents(self):
-        for file in self.get_list('torrent'):
-            try:
-                print(f'Trying to move file {file} to {self.torrent_dir}/', end='...')
-                os.renames(f'{self.from_directory}/{file}', f'{self.torrent_dir}/{file}')
-                print(' Done')
+                print(f'Trying to move file {file} to {getattr(self,f"{attr}_dir")}/', end='... ')
+                os.renames(f'{self.from_directory}/{file}', f'{getattr(self,f"{attr}_dir")}/{file}')
+                print('Done')
             except:
                 print('Error')
 
 
 cleaner = Cleaner()
-cleaner.move_books()
-cleaner.move_movies()
-cleaner.move_torrents()
+cleaner.move_files('book')
+cleaner.move_files('movie')
+cleaner.move_files('torrent')
